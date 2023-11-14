@@ -20,14 +20,19 @@ public class Main {
             try (Jedis jedis = pool.getResource()) {
                 jedis.flushAll();
 
-                printAllKeys(jedis);
                 System.out.println();
                 System.out.println("start:");
                 pet1.create(jedis);
 
-                Pet read = Pet.read(jedis);
-                System.out.println("read = " + read);
 
+                printAllKeys(jedis);
+                System.out.println("update:");
+                pet1.name = "other name";
+                pet1.update(jedis);
+                printAllKeys(jedis);
+
+                System.out.println("delete");
+                pet1.delete(jedis);
                 printAllKeys(jedis);
             }
         }

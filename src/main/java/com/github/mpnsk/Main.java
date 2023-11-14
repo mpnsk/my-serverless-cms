@@ -13,21 +13,19 @@ import java.util.Set;
 // then press Enter. You can now see whitespace characters in your code.
 public class Main {
     public static void main(String[] args) {
-        System.out.println("Main.main");
-        System.out.println("args = " + Arrays.toString(args));
 
-
-        Pet kiwy = new Pet("kiwy", LocalDate.now());
+        Pet pet1 = new Pet("pet1", LocalDate.now());
 
         try (JedisPool pool = new JedisPool("localhost", 6379)) {
             try (Jedis jedis = pool.getResource()) {
                 jedis.flushAll();
 
                 printAllKeys(jedis);
-                kiwy.create(jedis);
+                System.out.println();
+                System.out.println("start:");
+                pet1.create(jedis);
 
                 printAllKeys(jedis);
-//                redis_example(jedis);
             }
         }
     }

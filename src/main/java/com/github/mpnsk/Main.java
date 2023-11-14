@@ -25,6 +25,9 @@ public class Main {
                 System.out.println("start:");
                 pet1.create(jedis);
 
+                Pet read = Pet.read(jedis);
+                System.out.println("read = " + read);
+
                 printAllKeys(jedis);
             }
         }

@@ -25,14 +25,18 @@ public class Main {
                 jedis.flushAll();
                 petWriter.write(kiwy, jedis);
 
-                Set<String> keys = jedis.keys("*");
-                System.out.println("keys = " + keys);
-                for (String key : keys) {
-                    Map<String, String> stringStringMap = jedis.hgetAll(key);
-                    System.out.println("stringStringMap = " + stringStringMap);
-                }
+                printAllKeys(jedis);
 //                redis_example(jedis);
             }
+        }
+    }
+
+    private static void printAllKeys(Jedis jedis) {
+        Set<String> keys = jedis.keys("*");
+        System.out.println("keys = " + keys);
+        for (String key : keys) {
+            Map<String, String> stringStringMap = jedis.hgetAll(key);
+            System.out.println("stringStringMap = " + stringStringMap);
         }
     }
 

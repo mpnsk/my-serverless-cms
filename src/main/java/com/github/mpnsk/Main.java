@@ -16,14 +16,15 @@ public class Main {
         System.out.println("Main.main");
         System.out.println("args = " + Arrays.toString(args));
 
-        PetWriter petWriter = new PetWriter();
 
         Pet kiwy = new Pet("kiwy", LocalDate.now());
 
         try (JedisPool pool = new JedisPool("localhost", 6379)) {
             try (Jedis jedis = pool.getResource()) {
                 jedis.flushAll();
-                petWriter.write(kiwy, jedis);
+
+                printAllKeys(jedis);
+                kiwy.create(jedis);
 
                 printAllKeys(jedis);
 //                redis_example(jedis);

@@ -1,5 +1,6 @@
 package com.github.mpnsk;
 
+import lombok.extern.slf4j.Slf4j;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 
@@ -7,8 +8,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.logging.Level;
 import java.util.stream.Collectors;
 
+@Slf4j
 public class MyCms {
 
     public void setup(Map<String, Class> metadata) {
@@ -61,24 +64,24 @@ public class MyCms {
                 String entityKey = entityName + ":" + i;
                 String actualValue = jedis.hget(entityKey, key);
                 if (actualValue.equals(value)) {
-                    System.out.println("id = " + i);
-                    System.out.println("actualValue = " + actualValue);
-                    System.out.println("found matching entity!");
+                    log.debug("id = " + i);
+                    log.debug("actualValue = " + actualValue);
+                    log.debug("found matching entity!");
                     foundId = i;
                 } else {
                     nonMatchingIds.add(i);
-                    System.out.println("actualValue = " + actualValue + ", but expected " + value);
+                    log.debug("actualValue = " + actualValue + ", but expected " + value);
                 }
             }
 
-            System.out.println("non matching: "+nonMatchingIds.stream().map(String::valueOf).collect(Collectors.joining(", ")));
+            log.debug("non matching: "+nonMatchingIds.stream().map(String::valueOf).collect(Collectors.joining(", ")));
 
             if (foundId != null) {
                 Map<String, String> entity = jedis.hgetAll(entityName + ":" + foundId);
-                System.out.println("entity = " + entity);
+                log.debug("entity = " + entity);
                 return Optional.of(entity);
             }else {
-                System.out.println("no entity found");
+                log.debug("no entity found");
             }
         }
         return Optional.empty();

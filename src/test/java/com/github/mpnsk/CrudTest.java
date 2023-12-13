@@ -5,6 +5,9 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Map;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 public class CrudTest {
 
 
@@ -21,13 +24,22 @@ public class CrudTest {
         myCms.setup(metadata);
 
         Map<String, String> hobbit = DummyData.bookHobbit();
-        myCms.CRUD_create(hobbit);
-
         Map<String, String> fourthWing = DummyData.bookFourthWing();
-        myCms.CRUD_create(fourthWing);
 
-        Map<String, String> found = myCms.CRUD_readByAttribute("title", hobbit.get("title"));
-        System.out.println("found = " + found);
+        var tryToFindHobbit = myCms.CRUD_readByAttribute("title", hobbit.get("title"));
+        assertTrue(tryToFindHobbit.isEmpty());
+
+        myCms.CRUD_create(hobbit);
+        var foundHobbit = myCms.CRUD_readByAttribute("title", hobbit.get("title")).get();
+        assertEquals(hobbit, foundHobbit);
+
+
+        var tryToFindFourthWing = myCms.CRUD_readByAttribute("title", fourthWing.get("title"));
+        assertTrue(tryToFindFourthWing.isEmpty());
+
+        myCms.CRUD_create(fourthWing);
+        var foundFourthWing = myCms.CRUD_readByAttribute("title", fourthWing.get("title")).get();
+        assertEquals(fourthWing, foundFourthWing);
     }
 
 }

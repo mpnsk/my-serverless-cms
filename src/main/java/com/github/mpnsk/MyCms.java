@@ -6,6 +6,7 @@ import redis.clients.jedis.JedisPool;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class MyCms {
@@ -47,7 +48,7 @@ public class MyCms {
         }
     }
 
-    public Map<String, String> CRUD_readByAttribute(String key, String value) {
+    public Optional<Map<String, String>> CRUD_readByAttribute(String key, String value) {
         try (JedisPool pool = new JedisPool("localhost", 6379)) {
             Jedis jedis = pool.getResource();
 
@@ -75,11 +76,11 @@ public class MyCms {
             if (foundId != null) {
                 Map<String, String> entity = jedis.hgetAll(entityName + ":" + foundId);
                 System.out.println("entity = " + entity);
-                return entity;
+                return Optional.of(entity);
             }else {
                 System.out.println("no entity found");
             }
         }
-        return null;
+        return Optional.empty();
     }
 }

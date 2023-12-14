@@ -48,7 +48,7 @@ public class MyCms {
         }
     }
 
-    public Optional<Map<String, String>> CRUD_readByAttribute(String key, String value) {
+    public Optional<Map<String, String>> crud_readByAttribute(String key, String value) {
         try (JedisPool pool = new JedisPool("localhost", 6379)) {
             Jedis jedis = pool.getResource();
 
@@ -64,7 +64,7 @@ public class MyCms {
             for (int i = 1; i < idCursor; i++) {
                 String entityKey = entityName + ":" + i;
                 String actualValue = jedis.hget(entityKey, key);
-                if (actualValue.equals(value)) {
+                if (value.equals(actualValue)) {
                     log.debug("id = " + i);
                     log.debug("actualValue = " + actualValue);
                     log.debug("found matching entity!");
@@ -104,7 +104,7 @@ public class MyCms {
             for (int i = 1; i < idCursor; i++) {
                 String entityKey = entityName + ":" + i;
                 String actualValue = jedis.hget(entityKey, key);
-                if (actualValue.equals(value)) {
+                if (value.equals(actualValue)) {
                     log.debug("id = " + i);
                     log.debug("actualValue = " + actualValue);
                     log.debug("found matching entity!");
@@ -120,6 +120,45 @@ public class MyCms {
             if (foundId != null) {
 //                Map<String, String> entity = jedis.hgetAll(entityName + ":" + foundId);
                 jedis.hset(entityName + ":" + foundId,  updatedEntity);
+                return true;
+            } else {
+                log.debug("no entity found");
+            }
+        }
+        return false;
+    }
+
+    public boolean crud_deleteByAttribute(String key, String value) {
+        try (JedisPool pool = new JedisPool("localhost", 6379)) {
+            Jedis jedis = pool.getResource();
+
+            String entityName = "book";
+            String idCursorString = jedis.hget(entityName + "-meta", "id-cursor");
+            if (idCursorString == null) {
+                log.error("no cursor found");
+                return false;
+            }
+            final int idCursor = Integer.parseInt(idCursorString) + 1;
+            List<Integer> nonMatchingIds = new ArrayList<>();
+            Integer foundId = null;
+            for (int i = 1; i < idCursor; i++) {
+                String entityKey = entityName + ":" + i;
+                String actualValue = jedis.hget(entityKey, key);
+                if (actualValue.equals(value)) {
+                    log.debug("id = " + i);
+                    log.debug("actualValue = " + actualValue);
+                    log.debug("found matching entity!");
+                    foundId = i;
+                } else {
+                    nonMatchingIds.add(i);
+                    log.debug("actualValue = " + actualValue + ", but expected " + value);
+                }
+            }
+
+            log.debug("non matching: " + nonMatchingIds.stream().map(String::valueOf).collect(Collectors.joining(", ")));
+
+            if (foundId != null) {
+                jedis.del(entityName + ":" + foundId);
                 return true;
             } else {
                 log.debug("no entity found");

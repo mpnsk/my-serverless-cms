@@ -35,20 +35,20 @@ public class CrudTest {
         myCms.setup(metadata);
 
         Map<String, String> hobbit = DummyData.bookHobbit();
-        var tryToFindHobbit = myCms.CRUD_readByAttribute("title", hobbit.get("title"));
+        var tryToFindHobbit = myCms.crud_readByAttribute("title", hobbit.get("title"));
         assertTrue(tryToFindHobbit.isEmpty());
 
         myCms.CRUD_create(hobbit);
-        var foundHobbit = myCms.CRUD_readByAttribute("title", hobbit.get("title")).get();
+        var foundHobbit = myCms.crud_readByAttribute("title", hobbit.get("title")).get();
         assertEquals(hobbit, foundHobbit);
 
 
         Map<String, String> fourthWing = DummyData.bookFourthWing();
-        var tryToFindFourthWing = myCms.CRUD_readByAttribute("title", fourthWing.get("title"));
+        var tryToFindFourthWing = myCms.crud_readByAttribute("title", fourthWing.get("title"));
         assertTrue(tryToFindFourthWing.isEmpty());
 
         myCms.CRUD_create(fourthWing);
-        var foundFourthWing = myCms.CRUD_readByAttribute("title", fourthWing.get("title")).get();
+        var foundFourthWing = myCms.crud_readByAttribute("title", fourthWing.get("title")).get();
         assertEquals(fourthWing, foundFourthWing);
     }
 
@@ -73,5 +73,26 @@ public class CrudTest {
 
         var updatedHobbit = myCms.crud_readByAttribute("title", hobbit.get("title")).get();
         assertEquals(updatedHobbit.get("release"), "1999");
+    }
+
+    @Test
+    void crud_create_delete() {
+        Map<String, Class> metadata = DummyData.bookMetadata();
+        myCms.setup(metadata);
+
+        Map<String, String> hobbit = DummyData.bookHobbit();
+        var tryToFindHobbit = myCms.crud_readByAttribute("title", hobbit.get("title"));
+        assertTrue(tryToFindHobbit.isEmpty());
+
+        myCms.CRUD_create(hobbit);
+        var foundHobbit = myCms.crud_readByAttribute("title", hobbit.get("title")).get();
+        assertEquals(hobbit, foundHobbit);
+
+        boolean success = myCms.crud_deleteByAttribute("title", hobbit.get("title"));
+        assertTrue(success);
+
+
+        tryToFindHobbit = myCms.crud_readByAttribute("title", hobbit.get("title"));
+        assertTrue(tryToFindHobbit.isEmpty());
     }
 }

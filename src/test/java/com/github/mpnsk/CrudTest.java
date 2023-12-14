@@ -59,11 +59,11 @@ public class CrudTest {
 
 
         Map<String, String> hobbit = DummyData.bookHobbit();
-        var tryToFindHobbit = myCms.CRUD_readByAttribute("title", hobbit.get("title"));
+        var tryToFindHobbit = myCms.crud_readByAttribute("title", hobbit.get("title"));
         assertTrue(tryToFindHobbit.isEmpty());
 
         myCms.CRUD_create(hobbit);
-        var foundHobbit = myCms.CRUD_readByAttribute("title", hobbit.get("title")).get();
+        var foundHobbit = myCms.crud_readByAttribute("title", hobbit.get("title")).get();
         assertEquals(hobbit, foundHobbit);
 
         // now update the book
@@ -71,7 +71,7 @@ public class CrudTest {
         boolean success = myCms.crud_updateByAttribute("title", hobbit.get("title"), hobbit);
         assertTrue(success);
 
-        var updatedHobbit = myCms.CRUD_readByAttribute("title", hobbit.get("title")).get();
+        var updatedHobbit = myCms.crud_readByAttribute("title", hobbit.get("title")).get();
         assertEquals(updatedHobbit.get("release"), "1999");
     }
 }

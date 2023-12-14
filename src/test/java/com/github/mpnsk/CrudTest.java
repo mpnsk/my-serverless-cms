@@ -23,8 +23,6 @@ public class CrudTest {
         myCms.setup(metadata);
 
         Map<String, String> hobbit = DummyData.bookHobbit();
-        Map<String, String> fourthWing = DummyData.bookFourthWing();
-
         var tryToFindHobbit = myCms.CRUD_readByAttribute("title", hobbit.get("title"));
         assertTrue(tryToFindHobbit.isEmpty());
 
@@ -33,6 +31,7 @@ public class CrudTest {
         assertEquals(hobbit, foundHobbit);
 
 
+        Map<String, String> fourthWing = DummyData.bookFourthWing();
         var tryToFindFourthWing = myCms.CRUD_readByAttribute("title", fourthWing.get("title"));
         assertTrue(tryToFindFourthWing.isEmpty());
 

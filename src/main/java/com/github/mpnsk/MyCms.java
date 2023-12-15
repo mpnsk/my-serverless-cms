@@ -119,7 +119,7 @@ public class MyCms {
 
             if (foundId != null) {
 //                Map<String, String> entity = jedis.hgetAll(entityName + ":" + foundId);
-                jedis.hset(entityName + ":" + foundId,  updatedEntity);
+                jedis.hset(entityName + ":" + foundId, updatedEntity);
                 return true;
             } else {
                 log.debug("no entity found");
@@ -165,5 +165,27 @@ public class MyCms {
             }
         }
         return false;
+    }
+
+    public Optional<Map<String, String>> crud_readByIndex(int index) {
+        System.out.println("index = " + index);
+        try (JedisPool pool = new JedisPool("localhost", 6379)) {
+            Jedis jedis = pool.getResource();
+
+            String entityName = "book";
+            String entityKey = entityName + ":" + index;
+            try {
+                var result = jedis.hgetAll(entityKey);
+                log.debug("result = " + result);
+                if (result.equals(Map.of())){
+                    log.error("no entity found");
+                    return Optional.empty();
+                }
+                return Optional.of(result);
+            }catch (Exception e){
+                log.error(e.getMessage());
+                return Optional.empty();
+            }
+        }
     }
 }

@@ -51,6 +51,19 @@ public class CrudTest {
         var foundFourthWing = myCms.crud_readByAttribute("title", fourthWing.get("title")).get();
         assertEquals(fourthWing, foundFourthWing);
     }
+    @Test
+    void crud_create_and_read_indexed() {
+        Map<String, Class> metadata = DummyData.bookMetadata();
+        myCms.setup(metadata);
+
+        Map<String, String> hobbit = DummyData.bookHobbit();
+        var tryToFindHobbit = myCms.crud_readByIndex(1);
+        assertTrue(tryToFindHobbit.isEmpty());
+
+        myCms.CRUD_create(hobbit);
+        var foundHobbit = myCms.crud_readByIndex(1);
+        assertEquals(hobbit, foundHobbit.get());
+    }
 
     @Test
     void crud_create_update_read() {

@@ -12,6 +12,19 @@ public class DummyData {
         map.put("likes", Integer.class);
         return map;
     }
+    static Map<String, Class> petMetadata() {
+        HashMap<String, Class> map = new HashMap<>();
+        map.put("name", String.class);
+        map.put("age", Integer.class);
+        return map;
+    }
+
+    static Map<String,String> petHamster(){
+        HashMap<String, String> map = new HashMap<>();
+        map.put("name", "Hamtaro");
+        map.put("age", "2");
+        return map;
+    }
 
     static Map<String, String> bookHobbit() {
         Map<String, String> map = new HashMap<>();

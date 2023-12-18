@@ -13,30 +13,27 @@ import java.util.stream.Collectors;
 @Slf4j
 public class MyCms {
 
-    // TODO setup with multiple entities
-    public void setup(Map<String, Class> metadata) {
+    public void setup(String entityName, Map<String, Class> metadata) {
 
         try (JedisPool pool = new JedisPool("localhost", 6379)) {
             Jedis jedis = pool.getResource();
 
-            String entityname = "book";
             for (String key : metadata.keySet()) {
                 Class datatype = metadata.get(key);
 
-                jedis.hset(entityname + "-meta", key, datatype.getSimpleName());
+                jedis.hset(entityName + "-meta", key, datatype.getSimpleName());
 
             }
-            jedis.hset(entityname + "-meta", "id-cursor", "0");
+            jedis.hset(entityName + "-meta", "id-cursor", "0");
 
 
         }
     }
 
-    public void CRUD_create(Map<String, String> book) {
+    public void CRUD_create(String entityName, Map<String, String> book) {
         try (JedisPool pool = new JedisPool("localhost", 6379)) {
             Jedis jedis = pool.getResource();
 
-            String entityName = "book";
             String idCursorString = jedis.hget(entityName + "-meta", "id-cursor");
             final int idCursor = Integer.parseInt(idCursorString) + 1;
 
@@ -48,20 +45,19 @@ public class MyCms {
         }
     }
 
-    public Optional<Map<String, String>> crud_readByAttribute(String key, String value) {
+    public Optional<Map<String, String>> crud_readByAttribute(String entityName, String key, String value) {
         try (JedisPool pool = new JedisPool("localhost", 6379)) {
             Jedis jedis = pool.getResource();
 
-            String entityName = "book";
             String idCursorString = jedis.hget(entityName + "-meta", "id-cursor");
             if (idCursorString == null) {
                 log.error("no cursor found");
                 return Optional.empty();
             }
-            final int idCursor = Integer.parseInt(idCursorString) + 1;
+            final int idCursor = Integer.parseInt(idCursorString);
             List<Integer> nonMatchingIds = new ArrayList<>();
             Integer foundId = null;
-            for (int i = 1; i < idCursor; i++) {
+            for (int i = 1; i <= idCursor; i++) {
                 String entityKey = entityName + ":" + i;
                 String actualValue = jedis.hget(entityKey, key);
                 if (value.equals(actualValue)) {
@@ -128,11 +124,10 @@ public class MyCms {
         return false;
     }
 
-    public boolean crud_deleteByAttribute(String key, String value) {
+    public boolean crud_deleteByAttribute(String entityName, String key, String value) {
         try (JedisPool pool = new JedisPool("localhost", 6379)) {
             Jedis jedis = pool.getResource();
 
-            String entityName = "book";
             String idCursorString = jedis.hget(entityName + "-meta", "id-cursor");
             if (idCursorString == null) {
                 log.error("no cursor found");

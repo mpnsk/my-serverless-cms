@@ -35,7 +35,8 @@ public class MyCms {
             Jedis jedis = pool.getResource();
 
             String idCursorString = jedis.hget(entityName + "-meta", "id-cursor");
-            final int idCursor = Integer.parseInt(idCursorString) + 1;
+            int idCursor = Integer.parseInt(idCursorString);
+            idCursor++; // we create a new entry so the cursor has to shift
 
             for (String key : book.keySet()) {
                 String value = book.get(key);
@@ -57,7 +58,7 @@ public class MyCms {
             final int idCursor = Integer.parseInt(idCursorString);
             List<Integer> nonMatchingIds = new ArrayList<>();
             Integer foundId = null;
-            for (int i = 1; i <= idCursor; i++) {
+            for (int i = 1; i < idCursor; i++) {
                 String entityKey = entityName + ":" + i;
                 String actualValue = jedis.hget(entityKey, key);
                 if (value.equals(actualValue)) {
@@ -94,10 +95,10 @@ public class MyCms {
                 log.error("no cursor found");
                 return false;
             }
-            final int idCursor = Integer.parseInt(idCursorString) + 1;
+            final int idCursor = Integer.parseInt(idCursorString);
             List<Integer> nonMatchingIds = new ArrayList<>();
             Integer foundId = null;
-            for (int i = 1; i < idCursor; i++) {
+            for (int i = 1; i <= idCursor; i++) {
                 String entityKey = entityName + ":" + i;
                 String actualValue = jedis.hget(entityKey, key);
                 if (value.equals(actualValue)) {
@@ -172,12 +173,12 @@ public class MyCms {
             try {
                 var result = jedis.hgetAll(entityKey);
                 log.debug("result = " + result);
-                if (result.equals(Map.of())){
+                if (result.equals(Map.of())) {
                     log.error("no entity found");
                     return Optional.empty();
                 }
                 return Optional.of(result);
-            }catch (Exception e){
+            } catch (Exception e) {
                 log.error(e.getMessage());
                 return Optional.empty();
             }
